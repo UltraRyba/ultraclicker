@@ -80,22 +80,27 @@
       .then(() => {
         console.log("Anonimowy rizzler auth OK");
 
-        // Pobierz kliknięcia na start i ustaw licznik
         clicksRef.once('value')
           .then(snapshot => {
             const clicks = snapshot.val() || 0;
+            console.log('Początkowa liczba kliknięć z bazy:', clicks);
             clickCountEl.textContent = clicks;
           });
 
-        // Słuchaj zmian i aktualizuj licznik w czasie rzeczywistym
         clicksRef.on('value', snapshot => {
           const clicks = snapshot.val() || 0;
           clickCountEl.textContent = clicks;
         });
 
-        // Po kliknięciu zwiększ licznik globalnie
         catImg.addEventListener('click', () => {
-          clicksRef.transaction(current => (current || 0) + 1);
+          clicksRef.transaction(current => {
+            console.log('Klik przed update:', current);
+            return (current || 0) + 1;
+          }).then(() => {
+            console.log('Klik zapisany w bazie!');
+          }).catch(error => {
+            console.error('Błąd zapisu kliknięcia:', error);
+          });
         });
 
       })
