@@ -48,7 +48,8 @@
   <h1>Ultra Clicker 🐱</h1>
   <p>Klikaj na kotka, a kliknięcia liczą się globalnie lifetime!</p>
 
-  <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Kliknij kota!" />
+  <!-- gif kota klikacza -->
+  <img id="cat" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="Kliknij kota!" />
 
   <div>
     <p>Wszystkie kliknięcia lifetime:</p>
@@ -83,7 +84,6 @@
         clicksRef.once('value')
           .then(snapshot => {
             const clicks = snapshot.val() || 0;
-            console.log('Początkowa liczba kliknięć z bazy:', clicks);
             clickCountEl.textContent = clicks;
           });
 
@@ -93,11 +93,12 @@
         });
 
         catImg.addEventListener('click', () => {
+          let localClicks = parseInt(clickCountEl.textContent) || 0;
+          localClicks++;
+          clickCountEl.textContent = localClicks;
+
           clicksRef.transaction(current => {
-            console.log('Klik przed update:', current);
             return (current || 0) + 1;
-          }).then(() => {
-            console.log('Klik zapisany w bazie!');
           }).catch(error => {
             console.error('Błąd zapisu kliknięcia:', error);
           });
