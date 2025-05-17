@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ultra Clicker - Licznik Kliknięć Kotka</title>
+  <style>
+    body {
+      background: #ffe4e1;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      padding: 30px;
+      color: #333;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 0.2em;
+    }
+    #cat {
+      cursor: pointer;
+      width: 220px;
+      transition: transform 0.2s ease;
+      user-select: none;
+    }
+    #cat:active {
+      transform: scale(0.9);
+    }
+    #clickCount {
+      font-size: 4em;
+      color: #ff69b4;
+      margin-top: 0.2em;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.8em;
+      color: #999;
+    }
+  </style>
+
+  <!-- Firebase libs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+</head>
+<body>
+
+  <h1>Ultra Clicker 🐱</h1>
+  <p>Klikaj na kotka, a kliknięcia liczą się globalnie lifetime!</p>
+
+  <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Kliknij kota!" />
+
+  <div>
+    <p>Wszystkie kliknięcia lifetime:</p>
+    <div id="clickCount">0</div>
+  </div>
+
+  <footer>Made by ultrarybka - Skibidi Sigma Ohio Rizzler Brainrot</footer>
+
+  <script>
+    // Twój firebaseConfig, podmień poniżej na swój config z konsoli Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyCn4kMFmMcGwUbnhxxDiy_JESFZgs3nAUI",
+  authDomain: "ultraclicker-98135.firebaseapp.com",
+  databaseURL: "https://ultraclicker-98135-default-rtdb.firebaseio.com",
+  projectId: "ultraclicker-98135",
+  storageBucket: "ultraclicker-98135.firebasestorage.app",
+  messagingSenderId: "796375952251",
+  appId: "1:796375952251:web:7dad35b526eccb1842abde",
+  measurementId: "G-F593XDGLKZ"
+};
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    const catImg = document.getElementById('cat');
+    const clickCountEl = document.getElementById('clickCount');
+
+    // Referencja do kliknięć w bazie
+    const clicksRef = firebase.database().ref('ultraClicker/clicks');
+
+    // Anonimowe logowanie
+    firebase.auth().signInAnonymously()
+      .then(() => {
+        console.log("Anonimowy rizzler auth OK");
+
+        // Nasłuchuj zmiany kliknięć i aktualizuj licznik
+        clicksRef.on('value', snapshot => {
+          clickCountEl.textContent = snapshot.val() || 0;
+        });
+
+        // Kliknięcie kota zwiększa licznik globalny
+        catImg.addEventListener('click', () => {
+          clicksRef.transaction(current => (current || 0) + 1);
+        });
+
+      })
+      .catch(error => {
+        console.error("Anonimowe logowanie error:", error);
+      });
+  </script>
+
+</body>
+</html>
